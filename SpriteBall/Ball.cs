@@ -40,7 +40,7 @@ namespace SpriteBall
                 {
                     movement.X = mState.X - Position.X;
                     movement.Y = mState.Y - Position.Y;
-
+                    //
                    
                    //หามุมจากบอลไปถึงเม้า  
                     Angle = (float)Math.Atan2(movement.Y, movement.X);
