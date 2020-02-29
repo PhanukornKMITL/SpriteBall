@@ -32,37 +32,38 @@ namespace SpriteBall
             Position += Velocity * gameTime.ElapsedGameTime.Ticks / TimeSpan.TicksPerSecond;
 
             mState = Mouse.GetState();
-
             
-            if (this.Name.Equals("ShootBall"))
-            {
-                if (mState.LeftButton == ButtonState.Pressed && mReleased == true)
+         
+                if (this.Name.Equals("ShootBall"))
                 {
-                    movement.X = mState.X - Position.X;
-                    movement.Y = mState.Y - Position.Y;
+                    if (mState.LeftButton == ButtonState.Pressed && mReleased == true)
+                    {
+                        movement.X = mState.X - Position.X;
+                        movement.Y = mState.Y - Position.Y;
                     
                    
-                   //หามุมจากบอลไปถึงเม้า  
-                    Angle = (float)Math.Atan2(movement.Y, movement.X);
-                    Speed = 300;    
+                       //หามุมจากบอลไปถึงเม้า  
+                        Angle = (float)Math.Atan2(movement.Y, movement.X);
+                        Speed = 300;    
                     
-                    mReleased = false;
+                        mReleased = false;
+                    }
+
+                    if(mState.LeftButton == ButtonState.Released)
+                    {
+                        mReleased = true;   
+                    }
                 }
-
-                if(mState.LeftButton == ButtonState.Released)
-                {
-                    mReleased = true;   
-                }
-               
-
-            }
-
-
-            
-
-
            
-                  
+
+            // เช้คขอบซ้ายขวา (ใช้ Singleton.Gamewidth ไม่ได้ ไม่รู้ทำไม)
+            if (Position.X <= 0 || Position.X + _texture.Width >= 450) 
+            {
+				Angle = -Angle;
+				Angle += MathHelper.ToRadians(180);
+			}
+
+			
 
 
             base.Update(gameTime, gameObjects);
