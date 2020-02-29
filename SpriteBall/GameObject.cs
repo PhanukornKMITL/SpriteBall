@@ -22,7 +22,7 @@ namespace SpriteBall
         public string Name;
 
         public bool IsActive;
-        public int radius;
+        public int radius; 
 
        
 

@@ -24,6 +24,7 @@ namespace SpriteBall
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            IsMouseVisible = true;
         }
 
        
@@ -105,6 +106,7 @@ namespace SpriteBall
 
                     gObj = new Ball(ballTexture)
                     {
+                        Name = "Board",
                         color = _color,
                         Position = _ballPosition
 
@@ -114,32 +116,31 @@ namespace SpriteBall
                     _gameObjects.Add(gObj);
                 }
 
+               
+
 
             }
 
-          
+            GameObject shootBall = new Ball(ballTexture)
+            {
+                Name = "ShootBall",
+                Position = new Vector2((graphics.PreferredBackBufferWidth - ballTexture.Width)/2, 500),
+                color = Color.Green
+            };
+
+            _gameObjects.Add(shootBall);
 
 
-
-
-          
-
-            
-
-            
-
-
-
-
-
-
-
-
-
-
+            Reset();
         }
 
-        
+        protected  void Reset()
+        {
+            foreach (GameObject s in _gameObjects)
+            {
+                s.Reset();
+            }
+        }
         protected override void UnloadContent()
         {
             
@@ -151,12 +152,14 @@ namespace SpriteBall
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            foreach(GameObject g in _gameObjects)
+            _numObject = _gameObjects.Count;
+            for (int i = 0; i < _numObject; i++)
             {
-                g.Update(gameTime, _gameObjects);
+                if (_gameObjects[i].IsActive)
+                    _gameObjects[i].Update(gameTime, _gameObjects);
             }
-        
-            
+
+
 
             base.Update(gameTime);
         }
@@ -165,6 +168,7 @@ namespace SpriteBall
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+
             _numObject = _gameObjects.Count;
             for (int i = 0; i < _numObject; i++)
             {
