@@ -53,10 +53,10 @@ namespace SpriteBall
             _gameObjects = new List<GameObject>();
             Color _color = new Color();
             randomColor();
-            for(int i = 0; i < Singleton.Instance.GameBoard.GetLength(0); i++)
+            for(int i = 0; i < 8; i++)
             {
 
-                for (int j = 0; j < Singleton.Instance.GameBoard.GetLength(1); j++)
+                for (int j = 0; j < 4; j++)
                 {
 
                     switch (Singleton.Instance.GameBoard[i, j])
@@ -107,7 +107,7 @@ namespace SpriteBall
                     gObj = new Ball(ballTexture)
                     {
                         Name = "Board",
-                        color = _color,
+                        color = randomColor(),
                         Position = _ballPosition
 
                     };
@@ -115,31 +115,35 @@ namespace SpriteBall
 
                     _gameObjects.Add(gObj);
                 }
-
-               
-
-
             }
+
+
+            Reset();
+            
+
+
+            
+        }
+
+        protected  void Reset()
+        {
+            Singleton.Instance.isEndTurn = false;
 
             GameObject shootBall = new Ball(ballTexture)
             {
                 Name = "ShootBall",
-                Position = new Vector2((graphics.PreferredBackBufferWidth - ballTexture.Width)/2, 500),
-                color = Color.Green
+                Position = new Vector2((graphics.PreferredBackBufferWidth - ballTexture.Width) / 2, 500),
+                color = randomColor()
             };
 
             _gameObjects.Add(shootBall);
 
 
-            Reset();
-        }
-
-        protected  void Reset()
-        {
             foreach (GameObject s in _gameObjects)
             {
                 s.Reset();
             }
+
         }
         protected override void UnloadContent()
         {
@@ -159,7 +163,10 @@ namespace SpriteBall
                     _gameObjects[i].Update(gameTime, _gameObjects);
             }
 
-
+           // if (Singleton.Instance.isEndTurn)
+            //{
+              //  Reset();
+            //}
 
             base.Update(gameTime);
         }
@@ -183,7 +190,7 @@ namespace SpriteBall
             base.Draw(gameTime);
         }
 
-        public void randomColor()
+        /*public void randomColor()
         {
 
             int color;
@@ -202,6 +209,20 @@ namespace SpriteBall
 
             }//forj
 
+        }*/
+
+        public Color randomColor()
+        {
+            int rand = rnd.Next(0, 4);
+            switch (rand)
+            {
+                case 0: return Color.Red; break;
+                case 1: return Color.Blue; break;
+                case 2: return Color.Yellow; break;
+                case 3: return Color.Green; break;
+            }
+            return Color.Moccasin;
+            
         }
 
         

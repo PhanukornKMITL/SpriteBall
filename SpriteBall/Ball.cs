@@ -12,7 +12,7 @@ namespace SpriteBall
     class Ball : GameObject
     {
 
-        public float Speed;
+        
         public float Angle;
         MouseState mState;
         bool mReleased = true;
@@ -36,6 +36,11 @@ namespace SpriteBall
             
             if (this.Name.Equals("ShootBall"))
             {
+
+                if(Position.X <= 0 || Position.X + _texture.Width >= Singleton.SCREENHEIGHT * Singleton.TILESIZE)
+                {
+                    Angle = -Angle;
+                }
                 if (mState.LeftButton == ButtonState.Pressed && mReleased == true)
                 {
                     movement.X = mState.X - Position.X;
@@ -53,17 +58,11 @@ namespace SpriteBall
                 {
                     mReleased = true;   
                 }
-               
+
+                CollisionCheck(gameObjects,this);
+
 
             }
-
-
-            
-
-
-           
-                  
-
 
             base.Update(gameTime, gameObjects);
         }
@@ -79,6 +78,7 @@ namespace SpriteBall
 
         public override void Reset()
         {
+            Singleton.Instance.count = 0;
 
             if (this.Name.Equals("ShootBall"))
             {
@@ -87,9 +87,57 @@ namespace SpriteBall
 
                   //  Angle = 180;
             }
-            base.Reset();
+
+            
         }
 
+        public void CollisionCheck(List<GameObject> gameObjects,GameObject current)
+        {
+            GameObject boardObject;
+            foreach (GameObject g in gameObjects)
+            {
+                if (g.Name != current.Name && current.IsActive == true)
+                {
+                    boardObject = g;
+
+                    int sum = boardObject.radius + 28;
+
+                    if (Vector2.Distance(boardObject.Position, current.Position) < sum)
+                    {
+                        current.Speed = 0;
+                       if( ClusterCheck(current, g))
+                        {
+                            this.Name = "CheckedBall";
+                            g.Name = "CheckedBall";
+                            CollisionCheck(gameObjects, g); //เช็คตัวถัดไป
+                            CollisionCheck(gameObjects, current); //พอเช็คตัวถัดไปเสร็จให้มันเช็คตัวเองอีกรอบ
+                            if(Singleton.Instance.count >= 2)
+                            {
+                                current.IsActive = false;
+                                g.IsActive = false;
+                            }
+                           
+                        }   
+                    }
+                    
+                }
+            }
+
+
+           
+        }// CollisionCheck
+
+        public Boolean ClusterCheck(GameObject currebtObj, GameObject nextObj)
+        {
+            if(currebtObj.color == nextObj.color)
+            {
+
+                Singleton.Instance.count++;
+                return true;
+            }
+            return false;
+
+        }
 
     }
 }

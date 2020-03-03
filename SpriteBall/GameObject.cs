@@ -16,6 +16,7 @@ namespace SpriteBall
         public Color color;
         public float Rotation;
         public Vector2 Scale;
+        public float Speed;
 
         public Vector2 Velocity;
 
@@ -24,8 +25,6 @@ namespace SpriteBall
         public bool IsActive;
         public int radius; 
 
-       
-
         public GameObject(Texture2D texture)
         {
             _texture = texture;
@@ -33,7 +32,7 @@ namespace SpriteBall
             Scale = Vector2.One;
             Rotation = 0f;
             IsActive = true;
-            radius = (texture.Width + texture.Height) / 2; 
+            radius = 30; 
         }
 
         public virtual void Update(GameTime gameTime, List<GameObject> gameObjects)

@@ -27,6 +27,8 @@ namespace SpriteBall
         public KeyboardState PreviousKey, CurrentKey;
 
         public int[,] GameBoard;
+        public int count;
+        public bool isEndTurn = true;
 
         public static Singleton Instance
         {
