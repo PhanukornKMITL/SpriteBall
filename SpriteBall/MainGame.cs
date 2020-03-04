@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 
 namespace SpriteBall
 {
@@ -128,6 +128,7 @@ namespace SpriteBall
         protected  void Reset()
         {
             Singleton.Instance.isEndTurn = false;
+            Singleton.Instance.count = 0;
 
             GameObject shootBall = new Ball(ballTexture)
             {
@@ -137,6 +138,9 @@ namespace SpriteBall
             };
 
             _gameObjects.Add(shootBall);
+
+            _gameObjects.RemoveAll(g => g.IsActive == false);
+            _gameObjects.Where(w => w.Name == "CheckedBall").ToList().ForEach(s => s.Name = "Board");
 
 
             foreach (GameObject s in _gameObjects)
@@ -163,10 +167,10 @@ namespace SpriteBall
                     _gameObjects[i].Update(gameTime, _gameObjects);
             }
 
-           // if (Singleton.Instance.isEndTurn)
-            //{
-              //  Reset();
-            //}
+            if (Singleton.Instance.isEndTurn)
+            {
+                Reset();
+            }
 
             base.Update(gameTime);
         }

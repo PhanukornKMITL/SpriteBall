@@ -18,6 +18,7 @@ namespace SpriteBall
         bool mReleased = true;
         Vector2 mousePosition;
         Vector2 movement;
+        
 
         public Ball(Texture2D texture) : base(texture)
         {
@@ -52,14 +53,17 @@ namespace SpriteBall
                     Speed = 300;    
                     
                     mReleased = false;
+                    
                 }
 
                 if(mState.LeftButton == ButtonState.Released)
                 {
+                    CollisionCheck(gameObjects, this);
                     mReleased = true;   
                 }
 
-                CollisionCheck(gameObjects,this);
+                
+                
 
 
             }
@@ -78,14 +82,13 @@ namespace SpriteBall
 
         public override void Reset()
         {
-            Singleton.Instance.count = 0;
+            
 
             if (this.Name.Equals("ShootBall"))
             {
-                //Speed = 300;
+                
                 Position = new Vector2((Singleton.SCREENWIDTH * Singleton.TILESIZE - _texture.Width) / 2, 500);
 
-                  //  Angle = 180;
             }
 
             
@@ -98,41 +101,49 @@ namespace SpriteBall
             {
                 if (g.Name != current.Name && current.IsActive == true)
                 {
-                    boardObject = g;
+                    //boardObject = g;
 
-                    int sum = boardObject.radius + 28;
+                    int sum = g.radius + 28;
 
-                    if (Vector2.Distance(boardObject.Position, current.Position) < sum)
+                    if (Vector2.Distance(g.Position, current.Position) < sum)
                     {
                         current.Speed = 0;
                        if( ClusterCheck(current, g))
                         {
-                            this.Name = "CheckedBall";
+                            current.Name = "CheckedBall";
                             g.Name = "CheckedBall";
                             CollisionCheck(gameObjects, g); //เช็คตัวถัดไป
                             CollisionCheck(gameObjects, current); //พอเช็คตัวถัดไปเสร็จให้มันเช็คตัวเองอีกรอบ
-                            if(Singleton.Instance.count >= 2)
+                            if(Singleton.Instance.count > 2)
                             {
                                 current.IsActive = false;
                                 g.IsActive = false;
                             }
                            
-                        }   
+                        }
+
+                        if (!Singleton.Instance.isEndTurn)
+                        {
+                            current.Name = "Board";
+                            Singleton.Instance.isEndTurn = true;
+                        }
+                      
+                        
                     }
                     
                 }
             }
 
-
-           
+ 
         }// CollisionCheck
 
         public Boolean ClusterCheck(GameObject currebtObj, GameObject nextObj)
         {
             if(currebtObj.color == nextObj.color)
             {
-
+                Console.WriteLine("Before"+Singleton.Instance.count);
                 Singleton.Instance.count++;
+                Console.WriteLine("Before" + Singleton.Instance.count);
                 return true;
             }
             return false;
