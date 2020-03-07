@@ -139,7 +139,9 @@ namespace SpriteBall
 
             _gameObjects.Add(shootBall);
 
+            //RemoveAll ตัวที่ไม่ได้ Active อยู่
             _gameObjects.RemoveAll(g => g.IsActive == false);
+            //เปลี่ยนชื่อ ball ทั้งหมด ที่ชื่อว่า checkedBall กลับไปเป็น Board เหมือนเดิม
             _gameObjects.Where(w => w.Name == "CheckedBall").ToList().ForEach(s => s.Name = "Board");
 
 
@@ -172,6 +174,12 @@ namespace SpriteBall
                 Reset();
             }
 
+            //if(Singleton.Instance.missCount >= 3)
+            //{
+            //    _gameObjects.Where(w => w.Name == "Board").ToList().ForEach(s => s.Position.Y += 30);
+            //    Singleton.Instance.missCount = 0;
+            //}
+
             base.Update(gameTime);
         }
 
@@ -186,11 +194,6 @@ namespace SpriteBall
                if (_gameObjects[i].IsActive) _gameObjects[i].Draw(spriteBatch);
              }
                 
-
-           
-
-
-
             base.Draw(gameTime);
         }
 

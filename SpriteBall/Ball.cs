@@ -28,20 +28,18 @@ namespace SpriteBall
         public override void Update(GameTime gameTime, List<GameObject> gameObjects)
         {
 
-            Velocity.X = (float)Math.Cos(Angle) * Speed;
-            Velocity.Y = (float)Math.Sin(Angle) * Speed;
-            Position += Velocity * gameTime.ElapsedGameTime.Ticks / TimeSpan.TicksPerSecond;
+                Velocity.X = (float)Math.Cos(Angle) * Speed;
+                Velocity.Y = (float)Math.Sin(Angle) * Speed;
+                Position += Velocity * gameTime.ElapsedGameTime.Ticks / TimeSpan.TicksPerSecond;
 
             mState = Mouse.GetState();
 
-            
+            //ถ้าObj ตัวนี้เป็น Shooter ถึงจะทำ ถ้าเป็น Board Ball ก็คืออยู่เฉยๆโง่ๆไป
             if (this.Name.Equals("ShootBall"))
             {
+                
 
-                if(Position.X <= 0 || Position.X + _texture.Width >= Singleton.SCREENHEIGHT * Singleton.TILESIZE)
-                {
-                    Angle = -Angle;
-                }
+
                 if (mState.LeftButton == ButtonState.Pressed && mReleased == true)
                 {
                     movement.X = mState.X - Position.X;
@@ -58,12 +56,17 @@ namespace SpriteBall
 
                 if(mState.LeftButton == ButtonState.Released)
                 {
+                    
                     CollisionCheck(gameObjects, this);
+                   
                     mReleased = true;   
                 }
 
-                
-                
+               
+
+
+
+
 
 
             }
@@ -90,8 +93,6 @@ namespace SpriteBall
                 Position = new Vector2((Singleton.SCREENWIDTH * Singleton.TILESIZE - _texture.Width) / 2, 500);
 
             }
-
-            
         }
 
         public void CollisionCheck(List<GameObject> gameObjects,GameObject current)
@@ -102,28 +103,42 @@ namespace SpriteBall
                 if (g.Name != current.Name && current.IsActive == true)
                 {
                     //boardObject = g;
-
+                    // หา sum จาก รหัสมีของ obj ตัวที่จะเช็คด้วย + 28 หมายถึง จากรัศมี ออกไป28
                     int sum = g.radius + 28;
 
+                    //distance คือระยะห่างระหว่าง Obj 2 ตัว ถ้ามัน < sum หมายความว่าชน 
                     if (Vector2.Distance(g.Position, current.Position) < sum)
                     {
+                        // set speed = 0 คือให้บอลที่ยิงไป พอชนแล้ว จะหยุด
                         current.Speed = 0;
+                        //ClusterCheck คือเช็คสี
                        if( ClusterCheck(current, g))
                         {
+                            //กำหนดชื่อให้ obj ที่เช็คแล้ว 
                             current.Name = "CheckedBall";
                             g.Name = "CheckedBall";
-                            CollisionCheck(gameObjects, g); //เช็คตัวถัดไป
-                            CollisionCheck(gameObjects, current); //พอเช็คตัวถัดไปเสร็จให้มันเช็คตัวเองอีกรอบ
+                            CollisionCheck(gameObjects, g); //เช็คตัวถัดไปที่ติดกับมัน
+                            CollisionCheck(gameObjects, current); //พอเช็คตัวถัดไปเสร็จให้มันเช็คตัวเองอีกรอบ นึกถึง depth first search หาลึกสุดๆแล้วกลับมาหาที่ตัวมันเองดูว่ามันไปไหนได้อีก
+                            
+                            
                             if(Singleton.Instance.count > 2)
                             {
                                 current.IsActive = false;
                                 g.IsActive = false;
                             }
-                           
+
                         }
+                        //else
+                        //{
+                        //    Console.WriteLine(Singleton.Instance.missCount);
+                        //    Singleton.Instance.missCount++;
+                        //}
+
 
                         if (!Singleton.Instance.isEndTurn)
                         {
+                            //setให้จบตากรณีที่มันไม่ชนสีเหมือนกัน แล้วSet ค่าให้ตัว ปัจจุบันชื่อ Board 
+                            //ก็คือ ball ที่อยู่บนกระดานที่ไม่ใช่shooter อ่ะ
                             current.Name = "Board";
                             Singleton.Instance.isEndTurn = true;
                         }
@@ -141,9 +156,9 @@ namespace SpriteBall
         {
             if(currebtObj.color == nextObj.color)
             {
-                Console.WriteLine("Before"+Singleton.Instance.count);
+                //Console.WriteLine("Before"+Singleton.Instance.count);
                 Singleton.Instance.count++;
-                Console.WriteLine("Before" + Singleton.Instance.count);
+                //Console.WriteLine("Before" + Singleton.Instance.count);
                 return true;
             }
             return false;
