@@ -44,25 +44,46 @@ namespace SpriteBall
 
                 if (mState.LeftButton == ButtonState.Pressed && mReleased == true)
                 {
+                    mReleased = false;
                     movement.X = mState.X - Position.X;
                     movement.Y = mState.Y - Position.Y;
-                    
                    
                    //หามุมจากบอลไปถึงเม้า  
                     Angle = (float)Math.Atan2(movement.Y, movement.X);
                     Speed = 300;    
                     
-                    mReleased = false;
+
                     
                 }
 
                 if(mState.LeftButton == ButtonState.Released)
                 {
                     
-                    CollisionCheck(gameObjects, this);
-                   
-                    mReleased = true;   
+                    CollisionCheck(gameObjects, this);                  
+                       
                 }
+            }
+            else
+            {
+                int count = 0;
+                foreach(GameObject g in gameObjects)
+                {
+                    int sum = g.radius + 28;
+                    if(Vector2.Distance(g.Position, this.Position) < sum)
+                    {
+                        count++;
+                        
+                    }
+                   
+                }
+
+
+                if(count < 2)
+                {
+                    this.Position.Y += 10;
+                }
+                //Console.WriteLine(count);
+                
             }
 
             // เช้คขอบซ้ายขวา (ใช้ Singleton.Gamewidth ไม่ได้ ไม่รู้ทำไม)
@@ -128,8 +149,12 @@ namespace SpriteBall
                                 current.IsActive = false;
                                 g.IsActive = false;
                             }
+                           
 
                         }
+
+                       
+                        
                         //else
                         //{
                         //    Console.WriteLine(Singleton.Instance.missCount);
@@ -142,11 +167,17 @@ namespace SpriteBall
                             //setให้จบตากรณีที่มันไม่ชนสีเหมือนกัน แล้วSet ค่าให้ตัว ปัจจุบันชื่อ Board 
                             //ก็คือ ball ที่อยู่บนกระดานที่ไม่ใช่shooter อ่ะ
                             current.Name = "Board";
+                            
                             Singleton.Instance.isEndTurn = true;
+                            
+                            mReleased = true;
                         }
                       
                         
                     }
+
+                  
+                        
                     
                 }
             }

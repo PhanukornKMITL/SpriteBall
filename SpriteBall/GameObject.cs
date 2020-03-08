@@ -12,6 +12,7 @@ namespace SpriteBall
     {
         protected Texture2D _texture;
 
+        public int numCollision;
         public Vector2 Position;
         public Color color;
         public float Rotation;

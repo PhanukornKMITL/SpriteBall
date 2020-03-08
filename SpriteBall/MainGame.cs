@@ -129,6 +129,17 @@ namespace SpriteBall
         protected  void Reset()
         {
             Singleton.Instance.isEndTurn = false;
+            //ยิง miss 3 ครั้งแล้วร่วง
+            if (Singleton.Instance.count < 2)
+            {
+
+                Singleton.Instance.missCount++;
+                Console.WriteLine(Singleton.Instance.missCount);
+            }
+            else
+            {
+                Singleton.Instance.missCount = 0;
+            }
             Singleton.Instance.count = 0;
 
             GameObject shootBall = new Ball(ballTexture)
@@ -144,10 +155,12 @@ namespace SpriteBall
             _gameObjects.RemoveAll(g => g.IsActive == false);
             //เปลี่ยนชื่อ ball ทั้งหมด ที่ชื่อว่า checkedBall กลับไปเป็น Board เหมือนเดิม
             _gameObjects.Where(w => w.Name == "CheckedBall").ToList().ForEach(s => s.Name = "Board");
+            _gameObjects.Where(w => w.Name == "Board").ToList().ForEach(s => s.numCollision = 0);
 
 
             foreach (GameObject s in _gameObjects)
             {
+                
                 s.Reset();
             }
 
@@ -175,15 +188,23 @@ namespace SpriteBall
                 Reset();
             }
 
-            //if(Singleton.Instance.missCount >= 3)
-            //{
-            //    _gameObjects.Where(w => w.Name == "Board").ToList().ForEach(s => s.Position.Y += 30);
-            //    Singleton.Instance.missCount = 0;
-            //}
+            if(Singleton.Instance.missCount >= 3)
+            {
+                _gameObjects.Where(w => w.Name == "Board").ToList().ForEach(s => s.Position.Y += 30);
+                Singleton.Instance.missCount = 0;
+            }
+
+
+            
+
 
             base.Update(gameTime);
         }
 
+        public void slideDown()
+        {
+
+        }
         
         protected override void Draw(GameTime gameTime)
         {
