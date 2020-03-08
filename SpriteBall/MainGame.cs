@@ -136,10 +136,7 @@ namespace SpriteBall
                 Singleton.Instance.missCount++;
                 Console.WriteLine(Singleton.Instance.missCount);
             }
-            //else
-            //{
-            //    Singleton.Instance.missCount = 0;
-            //}
+            
             Singleton.Instance.count = 0;
 
             GameObject shootBall = new Ball(ballTexture)
