@@ -63,6 +63,7 @@ namespace SpriteBall
                        
                 }
             }
+            //else นี้คือถ้ามันไม่ได้ชื่อ shootball แล้วก็เช็คว่ามันติดกับคนอื่นหรือเปล่า
             else
             {
                 int count = 0;
