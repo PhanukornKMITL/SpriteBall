@@ -47,6 +47,7 @@ namespace SpriteBall
             ballTexture = this.Content.Load<Texture2D>("sprite");
             Texture2D rectTexture = new Texture2D(graphics.GraphicsDevice, 30, 100);
             Color[] data = new Color[30 * 100];
+
             for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
             rectTexture.SetData(data);
             Singleton.Instance.GameBoard = new int[8,4];

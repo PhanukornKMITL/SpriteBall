@@ -19,6 +19,10 @@ namespace SpriteBall
         Vector2 mousePosition;
         Vector2 movement;
         
+        
+        int lowerBubblesTime = 0;
+        public static int posRoof = 0;
+        
 
         public Ball(Texture2D texture) : base(texture)
         {
@@ -37,8 +41,6 @@ namespace SpriteBall
             //ถ้าObj ตัวนี้เป็น Shooter ถึงจะทำ ถ้าเป็น Board Ball ก็คืออยู่เฉยๆโง่ๆไป
             if (this.Name.Equals("ShootBall"))
             {
-                
-
 
                 if (mState.LeftButton == ButtonState.Pressed && mReleased == true)
                 {
@@ -61,15 +63,15 @@ namespace SpriteBall
                    
                     mReleased = true;   
                 }
-
-               
-
-
-
-
-
-
             }
+
+            // เช้คขอบซ้ายขวา (ใช้ Singleton.Gamewidth ไม่ได้ ไม่รู้ทำไม)
+            if (Position.X <= 0 || Position.X + _texture.Width >= 450) 
+            {
+				Angle = -Angle;
+				Angle += MathHelper.ToRadians(180);
+			}
+
 
             base.Update(gameTime, gameObjects);
         }
@@ -165,5 +167,6 @@ namespace SpriteBall
 
         }
 
+        
     }
 }
