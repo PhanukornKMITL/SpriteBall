@@ -64,8 +64,6 @@
     <None Include="Content\gameFont.xnb" />
     <None Include="Content\sprite.xnb" />
     <None Include="Content\spriteBall.xnb" />
-    <None Include="Content\Tile1.xnb" />
-    <None Include="Content\Tile2.xnb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
