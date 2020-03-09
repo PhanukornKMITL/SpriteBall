@@ -23,6 +23,11 @@ namespace SpriteBall
         public int Score;
         public int Level;
         public int LineDeleted;
+       public enum GameState
+        {
+            PLAYING, LOSE, WIN, PAUSE
+        }
+       public GameState gameState;
 
         public KeyboardState PreviousKey, CurrentKey;
 

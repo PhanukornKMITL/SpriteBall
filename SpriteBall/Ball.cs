@@ -20,6 +20,7 @@ namespace SpriteBall
         Vector2 movement;
         
         
+        
         int lowerBubblesTime = 0;
         public static int posRoof = 0;
         
@@ -41,6 +42,7 @@ namespace SpriteBall
             //ถ้าObj ตัวนี้เป็น Shooter ถึงจะทำ ถ้าเป็น Board Ball ก็คืออยู่เฉยๆโง่ๆไป
             if (this.Name.Equals("ShootBall"))
             {
+                Console.WriteLine(this.Position.Y);
 
                 if (mState.LeftButton == ButtonState.Pressed && mReleased == true)
                 {
@@ -63,28 +65,38 @@ namespace SpriteBall
                        
                 }
             }
+
             //else นี้คือถ้ามันไม่ได้ชื่อ shootball แล้วก็เช็คว่ามันติดกับคนอื่นหรือเปล่า
-            else
+            else 
             {
                 int count = 0;
                 foreach(GameObject g in gameObjects)
                 {
                     int sum = g.radius + 28;
-                    if(Vector2.Distance(g.Position, this.Position) < sum)
+                    if (Vector2.Distance(g.Position, this.Position) < sum )
                     {
                         count++;
-                        
+                        //isCollide = true;
+
                     }
-                   
+                    
+
+
                 }
+                
+                
 
 
-                if(count < 2)
+
+
+               if (count < 2)
                 {
                     this.Position.Y += 10;
+                    this.Name = "DownBall";
                 }
                 //Console.WriteLine(count);
-                
+                OutScreenCheck();
+
             }
 
             // เช็คขอบซ้ายขวา (ใช้ Singleton.Gamewidth ไม่ได้ ไม่รู้ทำไม)
@@ -124,7 +136,7 @@ namespace SpriteBall
             
             foreach (GameObject g in gameObjects)
             {
-                if (g.Name != current.Name && current.IsActive == true)
+                if (g.Name != current.Name && current.IsActive == true && !g.Name.Equals("DownBall"))
                 {
                     //boardObject = g;
                     // หา sum จาก รหัสมีของ obj ตัวที่จะเช็คด้วย + 28 หมายถึง จากรัศมี ออกไป28
@@ -158,6 +170,7 @@ namespace SpriteBall
                             //setให้จบตากรณีที่มันไม่ชนสีเหมือนกัน แล้วSet ค่าให้ตัว ปัจจุบันชื่อ Board 
                             //ก็คือ ball ที่อยู่บนกระดานที่ไม่ใช่shooter อ่ะ
                             current.Name = "Board";
+                            current.isCollide = true;
                             Singleton.Instance.isEndTurn = true;
                             
                             mReleased = true;
@@ -184,6 +197,16 @@ namespace SpriteBall
             }
             return false;
 
+        }
+
+        
+
+        public void OutScreenCheck()
+        {
+            if(this.Position.Y >= 400 && !this.Name.Equals("DownBall"))
+            {
+                Singleton.Instance.gameState = Singleton.GameState.LOSE;
+            }
         }
 
         

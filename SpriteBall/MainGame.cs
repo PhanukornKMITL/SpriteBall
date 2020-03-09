@@ -17,8 +17,14 @@ namespace SpriteBall
         private int _numObject;
         Random rnd = new Random();
         private Texture2D ballTexture;
+        string _text = "";
         GameObject gObj;
         Vector2 _ballPosition;
+        float timePass = 0f;
+        Texture2D ceiling;
+
+
+
 
         public MainGame()
         {
@@ -43,17 +49,21 @@ namespace SpriteBall
            
             spriteBatch = new SpriteBatch(GraphicsDevice);
             _font = Content.Load<SpriteFont>("gameFont");
+           Singleton.Instance.gameState = Singleton.GameState.PLAYING;
             //Texture2D ballTexture = this.Content.Load<Texture2D>("Ball");
             ballTexture = this.Content.Load<Texture2D>("sprite");
-            Texture2D rectTexture = new Texture2D(graphics.GraphicsDevice, 30, 100);
-            Color[] data = new Color[30 * 100];
+            /* ceiling = new Texture2D(graphics.GraphicsDevice, graphics.PreferredBackBufferWidth,10 );
+            Color[] data = new Color[graphics.PreferredBackBufferWidth * 10];
 
             for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
-            rectTexture.SetData(data);
+            ceiling.SetData(data);*/
             Singleton.Instance.GameBoard = new int[8,4];
             _gameObjects = new List<GameObject>();
             Color _color = new Color();
             randomColor();
+
+            
+            
             for(int i = 0; i < 8; i++)
             {
 
@@ -156,7 +166,7 @@ namespace SpriteBall
             //เปลี่ยนชื่อ ball ทั้งหมด ที่ชื่อว่า checkedBall กลับไปเป็น Board เหมือนเดิม
             _gameObjects.Where(w => w.Name == "CheckedBall").ToList().ForEach(s => s.Name = "Board");
             _gameObjects.Where(w => w.Name == "Board").ToList().ForEach(s => s.numCollision = 0);
-
+           
 
             foreach (GameObject s in _gameObjects)
             {
@@ -173,8 +183,18 @@ namespace SpriteBall
         
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            
+            switch(Singleton.Instance.gameState)
+            {
+                    case Singleton.GameState.PLAYING:
+
+
+                     timePass += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    
+
+              
+               if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                        Singleton.Instance.gameState = Singleton.GameState.PAUSE;
 
             _numObject = _gameObjects.Count;
             for (int i = 0; i < _numObject; i++)
@@ -188,11 +208,36 @@ namespace SpriteBall
                 Reset();
             }
 
-            if(Singleton.Instance.missCount >= 3)
+            if(Singleton.Instance.missCount >= 3  || timePass >= 10)
             {
                 _gameObjects.Where(w => w.Name == "Board").ToList().ForEach(s => s.Position.Y += 30);
                 Singleton.Instance.missCount = 0;
+                        timePass = 0;
             }
+
+                    //_gameObjects.Where(w => w.Name=="Board"&&w.isCollide == false).ToList().ForEach(s => s.Position.Y += 10);
+                    _gameObjects.RemoveAll(w => w.Name.Equals("DownBall") && w.Position.Y > 700);
+                    break;
+
+                case Singleton.GameState.PAUSE:
+
+                    if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+
+                        Singleton.Instance.gameState = Singleton.GameState.PLAYING;
+                        break;
+
+                case Singleton.GameState.LOSE:
+                    _text = "YOU LOSE";
+                    break;
+
+                case Singleton.GameState.WIN:
+                    _text = "YOU WIN";
+                    break;
+
+
+
+            }
+            
 
 
             
@@ -205,7 +250,11 @@ namespace SpriteBall
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-
+            spriteBatch.Begin();
+            spriteBatch.DrawString(_font,_text, new Vector2(300, 400), Color.Red);
+            spriteBatch.DrawString(_font,"Time:"+ timePass, new Vector2(300,300),Color.Red);
+            //spriteBatch.Draw(ceiling, new Vector2(0, 0), Color.Purple);
+            spriteBatch.End();
             _numObject = _gameObjects.Count;
             for (int i = 0; i < _numObject; i++)
             {
@@ -235,6 +284,15 @@ namespace SpriteBall
             }//forj
 
         }*/
+
+        
+       public void CheckWin()
+        {
+            if(_gameObjects.Count <= 0)
+            {
+                Singleton.Instance.gameState = Singleton.GameState.WIN;
+            }
+        }
 
         public Color randomColor()
         {
