@@ -18,7 +18,6 @@ namespace SpriteBall
         public float Rotation;
         public Vector2 Scale;
         public float Speed;
-
         public Vector2 Velocity;
 
         public string Name;
@@ -34,6 +33,7 @@ namespace SpriteBall
             Rotation = 0f;
             IsActive = true;
             radius = 30; 
+             
         }
 
         public virtual void Update(GameTime gameTime, List<GameObject> gameObjects)

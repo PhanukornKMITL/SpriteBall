@@ -87,7 +87,7 @@ namespace SpriteBall
                 
             }
 
-            // เช้คขอบซ้ายขวา (ใช้ Singleton.Gamewidth ไม่ได้ ไม่รู้ทำไม)
+            // เช็คขอบซ้ายขวา (ใช้ Singleton.Gamewidth ไม่ได้ ไม่รู้ทำไม)
             if (Position.X <= 0 || Position.X + _texture.Width >= 450) 
             {
 				Angle = -Angle;
@@ -121,7 +121,7 @@ namespace SpriteBall
 
         public void CollisionCheck(List<GameObject> gameObjects,GameObject current)
         {
-            GameObject boardObject;
+            
             foreach (GameObject g in gameObjects)
             {
                 if (g.Name != current.Name && current.IsActive == true)
@@ -143,32 +143,21 @@ namespace SpriteBall
                             g.Name = "CheckedBall";
                             CollisionCheck(gameObjects, g); //เช็คตัวถัดไปที่ติดกับมัน
                             CollisionCheck(gameObjects, current); //พอเช็คตัวถัดไปเสร็จให้มันเช็คตัวเองอีกรอบ นึกถึง depth first search หาลึกสุดๆแล้วกลับมาหาที่ตัวมันเองดูว่ามันไปไหนได้อีก
-                            
-                            
+
                             if(Singleton.Instance.count > 2)
                             {
                                 current.IsActive = false;
                                 g.IsActive = false;
+                                
                             }
-                           
 
-                        }
-
-                       
-                        
-                        //else
-                        //{
-                        //    Console.WriteLine(Singleton.Instance.missCount);
-                        //    Singleton.Instance.missCount++;
-                        //}
-
+                       }
 
                         if (!Singleton.Instance.isEndTurn)
                         {
                             //setให้จบตากรณีที่มันไม่ชนสีเหมือนกัน แล้วSet ค่าให้ตัว ปัจจุบันชื่อ Board 
                             //ก็คือ ball ที่อยู่บนกระดานที่ไม่ใช่shooter อ่ะ
                             current.Name = "Board";
-                            
                             Singleton.Instance.isEndTurn = true;
                             
                             mReleased = true;
@@ -177,8 +166,6 @@ namespace SpriteBall
                         
                     }
 
-                  
-                        
                     
                 }
             }
@@ -198,6 +185,9 @@ namespace SpriteBall
             return false;
 
         }
+
+        
+         
 
         
     }

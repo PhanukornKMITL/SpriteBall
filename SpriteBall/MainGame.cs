@@ -201,10 +201,6 @@ namespace SpriteBall
             base.Update(gameTime);
         }
 
-        public void slideDown()
-        {
-
-        }
         
         protected override void Draw(GameTime gameTime)
         {
