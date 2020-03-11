@@ -19,7 +19,7 @@ namespace SpriteBall
         public Vector2 Scale;
         public float Speed;
         public Vector2 Velocity;
-        public bool isCollide;
+        public bool isCollide,Oncelling;
 
         public string Name;
 

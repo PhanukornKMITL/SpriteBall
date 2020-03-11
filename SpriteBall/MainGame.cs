@@ -18,10 +18,11 @@ namespace SpriteBall
         Random rnd = new Random();
         private Texture2D ballTexture;
         string _text = "";
-        GameObject gObj;
+        GameObject ballObj,celingObj;
         Vector2 _ballPosition;
         float timePass = 0f;
         Texture2D ceiling;
+        int rand;
 
 
 
@@ -52,15 +53,26 @@ namespace SpriteBall
            Singleton.Instance.gameState = Singleton.GameState.PLAYING;
             //Texture2D ballTexture = this.Content.Load<Texture2D>("Ball");
             ballTexture = this.Content.Load<Texture2D>("sprite");
-            /* ceiling = new Texture2D(graphics.GraphicsDevice, graphics.PreferredBackBufferWidth,10 );
+             ceiling = new Texture2D(graphics.GraphicsDevice, graphics.PreferredBackBufferWidth,10 );
             Color[] data = new Color[graphics.PreferredBackBufferWidth * 10];
 
             for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
-            ceiling.SetData(data);*/
+            ceiling.SetData(data);
             Singleton.Instance.GameBoard = new int[8,4];
             _gameObjects = new List<GameObject>();
             Color _color = new Color();
             randomColor();
+
+            celingObj = new Celing(ceiling)
+            {
+                Name = "Ceiling",
+                color = Color.Purple,
+                Position = new Vector2(0,0)
+            };
+
+            _gameObjects.Add(celingObj);
+
+            
 
             
             
@@ -81,10 +93,10 @@ namespace SpriteBall
                     if (j % 2 == 0)
                     {
                         if(j == 0)
-                        _ballPosition = new Vector2(i * Singleton.BALLSIZE, j * Singleton.BALLSIZE );
+                        _ballPosition = new Vector2(i * Singleton.BALLSIZE, j * Singleton.BALLSIZE +10 );
                         
                           else
-                            _ballPosition = new Vector2(i * Singleton.BALLSIZE, j * Singleton.BALLSIZE -15  );
+                            _ballPosition = new Vector2(i * Singleton.BALLSIZE, j * Singleton.BALLSIZE -15 +10  );
                     }
                     
                     else
@@ -96,26 +108,16 @@ namespace SpriteBall
 
                                 _ballPosition = new Vector2((i * Singleton.BALLSIZE)
                                                   + (j + 1 * Singleton.BALLSIZE) / 2, ((j * Singleton.BALLSIZE)
-                                                  + (j - 1 * Singleton.BALLSIZE) / 2) + 20);
+                                                  + (j - 1 * Singleton.BALLSIZE) / 2) + 20 + 10) ;
                             }
                             else
                                 _ballPosition = new Vector2((i * Singleton.BALLSIZE)
                                                   + (j + 1 * Singleton.BALLSIZE) / 2, ((j * Singleton.BALLSIZE)
-                                                  + (j - 1 * Singleton.BALLSIZE) / 2) + 5);
-
-
-                            /*_ballPosition = new Vector2((i * Singleton.BALLSIZE)
-                                                 + (j + 1 * Singleton.BALLSIZE) / 2, j * Singleton.BALLSIZE);*/
-
-
-
-                        }
-                       
-                        
-                      
+                                                  + (j - 1 * Singleton.BALLSIZE) / 2) + 5 +10);
+                        }   
                     }
 
-                    gObj = new Ball(ballTexture)
+                    ballObj = new Ball(ballTexture)
                     {
                         Name = "Board",
                         color = randomColor(),
@@ -124,7 +126,7 @@ namespace SpriteBall
                     };
 
 
-                    _gameObjects.Add(gObj);
+                    _gameObjects.Add(ballObj);
                 }
             }
 
@@ -138,31 +140,46 @@ namespace SpriteBall
 
         protected  void Reset()
         {
+            GameObject shootBall = null;
             Singleton.Instance.isEndTurn = false;
             //ยิง miss 3 ครั้งแล้วร่วง
             if (Singleton.Instance.count < 2)
             {
 
                 Singleton.Instance.missCount++;
-                Console.WriteLine(Singleton.Instance.missCount);
+                //Console.WriteLine(Singleton.Instance.missCount);
             }
             //else
             //{
             //    Singleton.Instance.missCount = 0;
             //}
             Singleton.Instance.count = 0;
-
-            GameObject shootBall = new Ball(ballTexture)
+            rand = rnd.Next(0, 11);
+            if (rand != 1)
             {
-                Name = "ShootBall",
-                Position = new Vector2((graphics.PreferredBackBufferWidth - ballTexture.Width) / 2, 500),
-                color = randomColor()
-            };
+                 shootBall = new Ball(ballTexture)
+                {
+                    Name = "ShootBall",
+                    Position = new Vector2((graphics.PreferredBackBufferWidth - ballTexture.Width) / 2, 500),
+                    color = randomColor()
+                };
+            }
+            else
+            {
+                shootBall = new Ball(ballTexture)
+                {
+                    Name = "SpecialBall",
+                    Position = new Vector2((graphics.PreferredBackBufferWidth - ballTexture.Width) / 2, 500),
+                    color = Color.Purple
+                };
+            }
+            
 
             _gameObjects.Add(shootBall);
 
             //RemoveAll ตัวที่ไม่ได้ Active อยู่
             _gameObjects.RemoveAll(g => g.IsActive == false);
+            
             //เปลี่ยนชื่อ ball ทั้งหมด ที่ชื่อว่า checkedBall กลับไปเป็น Board เหมือนเดิม
             _gameObjects.Where(w => w.Name == "CheckedBall").ToList().ForEach(s => s.Name = "Board");
             _gameObjects.Where(w => w.Name == "Board").ToList().ForEach(s => s.numCollision = 0);
@@ -197,8 +214,11 @@ namespace SpriteBall
                         Singleton.Instance.gameState = Singleton.GameState.PAUSE;
 
             _numObject = _gameObjects.Count;
-            for (int i = 0; i < _numObject; i++)
+                    Console.WriteLine(_numObject);
+
+                    for (int i = 0; i < _numObject; i++)
             {
+
                 if (_gameObjects[i].IsActive)
                     _gameObjects[i].Update(gameTime, _gameObjects);
             }
@@ -208,14 +228,15 @@ namespace SpriteBall
                 Reset();
             }
 
-            if(Singleton.Instance.missCount >= 3  || timePass >= 10)
+            if(Singleton.Instance.missCount >= 3  || timePass >= 30)
             {
-                _gameObjects.Where(w => w.Name == "Board").ToList().ForEach(s => s.Position.Y += 30);
+                _gameObjects.Where(w => w.Name == "Board" || w.Name=="Ceiling").ToList().ForEach(s => s.Position.Y += 30);
                 Singleton.Instance.missCount = 0;
                         timePass = 0;
             }
 
-                    //_gameObjects.Where(w => w.Name=="Board"&&w.isCollide == false).ToList().ForEach(s => s.Position.Y += 10);
+                    _gameObjects.Where(w => w.Name=="DownBall").ToList().ForEach(s => s.Position.Y += 10);
+
                     _gameObjects.RemoveAll(w => w.Name.Equals("DownBall") && w.Position.Y > 700);
                     break;
 
@@ -260,35 +281,18 @@ namespace SpriteBall
             {
                if (_gameObjects[i].IsActive) _gameObjects[i].Draw(spriteBatch);
              }
+
+
                 
             base.Draw(gameTime);
         }
 
-        /*public void randomColor()
-        {
-
-            int color;
-           
-
-            for (int i = 0; i < Singleton.Instance.GameBoard.GetLength(0); i++)
-            {
-
-                for (int j = 0; j < Singleton.Instance.GameBoard.GetLength(1); j++)
-                {
-                   color = rnd.Next(0, 4);
-                    Singleton.Instance.GameBoard[i, j] = color;
-                    
-                }
-
-
-            }//forj
-
-        }*/
+      
 
         
        public void CheckWin()
         {
-            if(_gameObjects.Count <= 0)
+            if(_gameObjects.Count < 3)
             {
                 Singleton.Instance.gameState = Singleton.GameState.WIN;
             }

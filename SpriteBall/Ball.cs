@@ -40,9 +40,9 @@ namespace SpriteBall
             mState = Mouse.GetState();
 
             //ถ้าObj ตัวนี้เป็น Shooter ถึงจะทำ ถ้าเป็น Board Ball ก็คืออยู่เฉยๆโง่ๆไป
-            if (this.Name.Equals("ShootBall"))
+            if (this.Name.Equals("ShootBall") || this.Name.Equals("SpecialBall"))
             {
-                Console.WriteLine(this.Position.Y);
+                //Console.WriteLine(this.Position.Y);
 
                 if (mState.LeftButton == ButtonState.Pressed && mReleased == true)
                 {
@@ -61,7 +61,7 @@ namespace SpriteBall
                 if(mState.LeftButton == ButtonState.Released)
                 {
                     
-                    CollisionCheck(gameObjects, this);                  
+                    ColorChainCheck(gameObjects, this);                  
                        
                 }
             }
@@ -79,32 +79,29 @@ namespace SpriteBall
                         //isCollide = true;
 
                     }
+
+                
+
+
+
+                    }
+
+                    if (count < 2)
+                     {
+                         this.Position.Y += 10;
+                         this.Name = "DownBall";
+                     }
                     
+                    OutScreenCheck();
 
-
-                }
-                
-                
-
-
-
-
-               if (count < 2)
-                {
-                    this.Position.Y += 10;
-                    this.Name = "DownBall";
-                }
-                //Console.WriteLine(count);
-                OutScreenCheck();
-
-            }
+            }//else
 
             // เช็คขอบซ้ายขวา (ใช้ Singleton.Gamewidth ไม่ได้ ไม่รู้ทำไม)
-            if (Position.X <= 0 || Position.X + _texture.Width >= 450) 
+            if (Position.X <= 0 || Position.X + _texture.Width >= 450)
             {
-				Angle = -Angle;
-				Angle += MathHelper.ToRadians(180);
-			}
+                Angle = -Angle;
+                Angle += MathHelper.ToRadians(180);
+            }
 
 
             base.Update(gameTime, gameObjects);
@@ -123,7 +120,7 @@ namespace SpriteBall
         {
             
 
-            if (this.Name.Equals("ShootBall"))
+            if (this.Name.Equals("ShootBall") || this.Name.Equals("SpecialBall"))
             {
                 
                 Position = new Vector2((Singleton.SCREENWIDTH * Singleton.TILESIZE - _texture.Width) / 2, 500);
@@ -131,20 +128,29 @@ namespace SpriteBall
             }
         }
 
-        public void CollisionCheck(List<GameObject> gameObjects,GameObject current)
+        public void ColorChainCheck(List<GameObject> gameObjects,GameObject current)
         {
             
             foreach (GameObject g in gameObjects)
             {
-                if (g.Name != current.Name && current.IsActive == true && !g.Name.Equals("DownBall"))
+                if (g.Name != current.Name && current.IsActive == true && !current.Name.Equals("DownBall") && !g.Name.Equals("DownBall"))
                 {
-                    //boardObject = g;
-                    // หา sum จาก รหัสมีของ obj ตัวที่จะเช็คด้วย + 28 หมายถึง จากรัศมี ออกไป28
-                    int sum = g.radius + 28;
+                   
+                    
 
-                    //distance คือระยะห่างระหว่าง Obj 2 ตัว ถ้ามัน < sum หมายความว่าชน 
-                    if (Vector2.Distance(g.Position, current.Position) < sum)
+                     
+                    if (collisionCheck(g,current))
                     {
+                        //SpecialBall
+                        if (current.Name.Equals("SpecialBall"))
+                        {
+                            Console.WriteLine(this.color);
+                            current.color = g.color;
+                            Console.WriteLine(this.color);
+                        }
+                            
+
+                        
                         // set speed = 0 คือให้บอลที่ยิงไป พอชนแล้ว จะหยุด
                         current.Speed = 0;
                         //ClusterCheck คือเช็คสี
@@ -153,8 +159,8 @@ namespace SpriteBall
                             //กำหนดชื่อให้ obj ที่เช็คแล้ว 
                             current.Name = "CheckedBall";
                             g.Name = "CheckedBall";
-                            CollisionCheck(gameObjects, g); //เช็คตัวถัดไปที่ติดกับมัน
-                            CollisionCheck(gameObjects, current); //พอเช็คตัวถัดไปเสร็จให้มันเช็คตัวเองอีกรอบ นึกถึง depth first search หาลึกสุดๆแล้วกลับมาหาที่ตัวมันเองดูว่ามันไปไหนได้อีก
+                            ColorChainCheck(gameObjects, g); //เช็คตัวถัดไปที่ติดกับมัน
+                            ColorChainCheck(gameObjects, current); //พอเช็คตัวถัดไปเสร็จให้มันเช็คตัวเองอีกรอบ นึกถึง depth first search หาลึกสุดๆแล้วกลับมาหาที่ตัวมันเองดูว่ามันไปไหนได้อีก
 
                             if(Singleton.Instance.count > 2)
                             {
@@ -198,6 +204,69 @@ namespace SpriteBall
             return false;
 
         }
+
+        public bool collisionCheck(GameObject g, GameObject current)
+        {
+            //distance คือระยะห่างระหว่าง Obj 2 ตัว ถ้ามัน < sum หมายความว่าชน
+            int sum = g.radius + 28;
+            if (Vector2.Distance(g.Position, current.Position) < sum)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        /*public bool isOnCeiling(List<GameObject> gameObjects, GameObject current)
+        {
+            //string name = "Board";
+            foreach (GameObject g in gameObjects)
+            {
+                
+                if( !current.Name.Equals("Ceiling"))
+                {
+                    
+                    current.Name = "CheckedBall";
+                    if (current.Name != g.Name)
+                    {
+                        Console.WriteLine("Current " + current.Name + " g" + g.Name);
+                        if (g.Name.Equals("Ceiling"))
+                        {
+                            //Console.WriteLine(g.Name);
+                            float distance = g.Position.Y - current.Position.Y;
+
+                            if (distance <= 10)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+
+
+                        }
+                    }
+
+                    else if (collisionCheck(g, current))
+                    {
+                        isOnCeiling(gameObjects, g); //ส่งตัวถัดไปเช็คต่อ
+
+                    }
+                    else
+                    {
+                        isOnCeiling(gameObjects, current);
+                    }
+                }
+
+            }
+
+            return false;
+
+        }*/
 
         
 
