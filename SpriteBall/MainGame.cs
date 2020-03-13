@@ -239,7 +239,7 @@ namespace SpriteBall
                 Reset();
             }
 
-            if(Singleton.Instance.missCount >= 3  || timePass >= 30)
+            if(Singleton.Instance.missCount >= 3  || timePass >= 10)
             {
                 _gameObjects.Where(w => w.Name == "Board" || w.Name=="Ceiling").ToList().ForEach(s => s.Position.Y += 30);
                 Singleton.Instance.missCount = 0;
@@ -299,7 +299,7 @@ namespace SpriteBall
                 spriteBatch.Draw(finalResult, new Vector2((graphics.PreferredBackBufferWidth - finalResult.Width) / 2, (graphics.PreferredBackBufferHeight - finalResult.Height) / 2), Color.White);
             }
             //spriteBatch.Draw(gun, gunPos,null,Color.White);
-            spriteBatch.Draw(gun, new Vector2(gunPos.X +55,gunPos.Y + 110), null, Color.White, rotation  , new Vector2(gun.Width / 2, gun.Height / 2  ),
+            spriteBatch.Draw(gun, new Vector2(gunPos.X +51,gunPos.Y + 118), null, Color.White, rotation  , new Vector2(gun.Width / 2 , gun.Height / 2 +18 ),
                  1f,SpriteEffects.None,0f);
           
 
