@@ -61,38 +61,60 @@ namespace SpriteBall
                 if(mState.LeftButton == ButtonState.Released)
                 {
                     
-                    ColorChainCheck(gameObjects, this);                  
-                       
+                    ColorChainCheck(gameObjects, this);
+                    foreach (GameObject g in gameObjects)
+                    {
+                        if (g.Name.Equals("Ceiling") && collisionCheck(g, this))
+                        {
+                            this.Speed = 0;
+                            if (!Singleton.Instance.isEndTurn)
+                            {
+                                //setให้จบตากรณีที่มันไม่ชนสีเหมือนกัน แล้วSet ค่าให้ตัว ปัจจุบันชื่อ Board 
+                                //ก็คือ ball ที่อยู่บนกระดานที่ไม่ใช่shooter อ่ะ
+                                this.Name = "Board";
+                                this.isCollide = true;
+                                Singleton.Instance.isEndTurn = true;
+
+                                mReleased = true;
+                            }
+                        }
+                    }
+
+                    //hitCeiling(gameObjects, this);
+
+
                 }
             }
 
             //else นี้คือถ้ามันไม่ได้ชื่อ shootball แล้วก็เช็คว่ามันติดกับคนอื่นหรือเปล่า
             else 
             {
+
+
                 int count = 0;
-                foreach(GameObject g in gameObjects)
+                foreach (GameObject g in gameObjects)
                 {
                     int sum = g.radius + 28;
-                    if (Vector2.Distance(g.Position, this.Position) < sum )
+                    if (Vector2.Distance(g.Position, this.Position) < sum)
                     {
                         count++;
                         //isCollide = true;
 
                     }
-
-                
-
+                   
 
 
-                    }
 
-                    if (count < 2)
-                     {
-                         this.Position.Y += 10;
-                         this.Name = "DownBall";
-                     }
-                    
-                    OutScreenCheck();
+
+                }
+
+                if (count < 2)
+                {
+                    this.Position.Y += 10;
+                    this.Name = "DownBall";
+                }
+
+                OutScreenCheck();
 
             }//else
 
@@ -133,28 +155,27 @@ namespace SpriteBall
             
             foreach (GameObject g in gameObjects)
             {
-                if (g.Name != current.Name && current.IsActive == true && !current.Name.Equals("DownBall") && !g.Name.Equals("DownBall"))
+                if (g.Name != current.Name && current.IsActive == true && !current.Name.Equals("DownBall") && !g.Name.Equals("DownBall") 
+                    && !g.Name.Equals("Ceiling") && !current.Name.Equals("Ceiling"))
                 {
-                   
-                    
-
+  
                      
                     if (collisionCheck(g,current))
                     {
                         //SpecialBall
                         if (current.Name.Equals("SpecialBall"))
                         {
-                            Console.WriteLine(this.color);
+                            
                             current.color = g.color;
-                            Console.WriteLine(this.color);
+                            
                         }
                             
 
                         
                         // set speed = 0 คือให้บอลที่ยิงไป พอชนแล้ว จะหยุด
                         current.Speed = 0;
-                        //ClusterCheck คือเช็คสี
-                       if( ClusterCheck(current, g))
+                        //ColorCheck คือเช็คสี
+                       if( ColorCheck(current, g))
                         {
                             //กำหนดชื่อให้ obj ที่เช็คแล้ว 
                             current.Name = "CheckedBall";
@@ -178,21 +199,25 @@ namespace SpriteBall
                             current.Name = "Board";
                             current.isCollide = true;
                             Singleton.Instance.isEndTurn = true;
-                            
+
                             mReleased = true;
                         }
-                      
-                        
+
+
                     }
 
                     
                 }
+             
+
             }
 
  
         }// CollisionCheck
 
-        public Boolean ClusterCheck(GameObject currebtObj, GameObject nextObj)
+
+
+        public Boolean ColorCheck(GameObject currebtObj, GameObject nextObj)
         {
             if(currebtObj.color == nextObj.color)
             {
@@ -205,20 +230,41 @@ namespace SpriteBall
 
         }
 
+        
+
         public bool collisionCheck(GameObject g, GameObject current)
         {
-            //distance คือระยะห่างระหว่าง Obj 2 ตัว ถ้ามัน < sum หมายความว่าชน
-            int sum = g.radius + 28;
-            if (Vector2.Distance(g.Position, current.Position) < sum)
+            if (!g.Name.Equals("Ceiling"))
             {
-                return true;
+                //distance คือระยะห่างระหว่าง Obj 2 ตัว ถ้ามัน < sum หมายความว่าชน
+                int sum = g.radius + 28;
+                if (Vector2.Distance(g.Position, current.Position) < sum)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
-                return false;
+                float distance = g.Position.Y - current.Position.Y;
+
+                if (distance > 15)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
+            
 
         }
+
+       
 
         /*public bool isOnCeiling(List<GameObject> gameObjects, GameObject current)
         {

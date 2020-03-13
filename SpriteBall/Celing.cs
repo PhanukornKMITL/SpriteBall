@@ -24,7 +24,7 @@ namespace SpriteBall
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin();
+           spriteBatch.Begin();
             spriteBatch.Draw(_texture, Position, color);
             spriteBatch.End();
 

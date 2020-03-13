@@ -16,7 +16,7 @@ namespace SpriteBall
         List<GameObject> _gameObjects;
         private int _numObject;
         Random rnd = new Random();
-        private Texture2D ballTexture;
+        private Texture2D ballTexture,bgTexture,woodTexture,winTexture,loseTexture,finalResult,gun;
         string _text = "";
         GameObject ballObj,celingObj;
         Vector2 _ballPosition;
@@ -52,21 +52,23 @@ namespace SpriteBall
             _font = Content.Load<SpriteFont>("gameFont");
            Singleton.Instance.gameState = Singleton.GameState.PLAYING;
             //Texture2D ballTexture = this.Content.Load<Texture2D>("Ball");
+            bgTexture = Content.Load<Texture2D>("BG");
+            woodTexture = Content.Load<Texture2D>("wood");
             ballTexture = this.Content.Load<Texture2D>("sprite");
-             ceiling = new Texture2D(graphics.GraphicsDevice, graphics.PreferredBackBufferWidth,10 );
-            Color[] data = new Color[graphics.PreferredBackBufferWidth * 10];
+            winTexture = Content.Load<Texture2D>("youwin");
+            loseTexture = Content.Load<Texture2D>("youlose");
+            gun = Content.Load<Texture2D>("gun");
 
-            for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
-            ceiling.SetData(data);
             Singleton.Instance.GameBoard = new int[8,4];
             _gameObjects = new List<GameObject>();
             Color _color = new Color();
-            randomColor();
+           
+            
 
-            celingObj = new Celing(ceiling)
+            celingObj = new Celing(woodTexture)
             {
                 Name = "Ceiling",
-                color = Color.Purple,
+                color =  Color.White,
                 Position = new Vector2(0,0)
             };
 
@@ -85,9 +87,9 @@ namespace SpriteBall
                     switch (Singleton.Instance.GameBoard[i, j])
                     {
                         case 0: _color = Color.Red; break;
-                        case 1: _color = Color.Blue; break;
-                        case 2: _color = Color.Yellow; break;
-                        case 3: _color = Color.Green; break;
+                        case 1: _color = Color.Blue;  break;
+                        case 2: _color = Color.Yellow;  break;
+                        case 3: _color = Color.Green;  break;
                     }
 
                     if (j % 2 == 0)
@@ -147,12 +149,9 @@ namespace SpriteBall
             {
 
                 Singleton.Instance.missCount++;
-                //Console.WriteLine(Singleton.Instance.missCount);
+                
             }
-            //else
-            //{
-            //    Singleton.Instance.missCount = 0;
-            //}
+           
             Singleton.Instance.count = 0;
             rand = rnd.Next(0, 11);
             if (rand != 1)
@@ -205,7 +204,7 @@ namespace SpriteBall
             {
                     case Singleton.GameState.PLAYING:
 
-
+                    finalResult = null;
                      timePass += (float)gameTime.ElapsedGameTime.TotalSeconds;
                     
 
@@ -236,8 +235,9 @@ namespace SpriteBall
             }
 
                     _gameObjects.Where(w => w.Name=="DownBall").ToList().ForEach(s => s.Position.Y += 10);
-
                     _gameObjects.RemoveAll(w => w.Name.Equals("DownBall") && w.Position.Y > 700);
+
+                    CheckWin();
                     break;
 
                 case Singleton.GameState.PAUSE:
@@ -249,10 +249,12 @@ namespace SpriteBall
 
                 case Singleton.GameState.LOSE:
                     _text = "YOU LOSE";
+                    finalResult = loseTexture;
                     break;
 
                 case Singleton.GameState.WIN:
                     _text = "YOU WIN";
+                    finalResult = winTexture;
                     break;
 
 
@@ -273,17 +275,27 @@ namespace SpriteBall
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
             spriteBatch.DrawString(_font,_text, new Vector2(300, 400), Color.Red);
-            spriteBatch.DrawString(_font,"Time:"+ timePass, new Vector2(300,300),Color.Red);
-            //spriteBatch.Draw(ceiling, new Vector2(0, 0), Color.Purple);
-            spriteBatch.End();
+          
+            
+            spriteBatch.Draw(bgTexture, new Vector2(0, 0),null);
+            
+            
             _numObject = _gameObjects.Count;
+            if (finalResult != null)
+            {
+                spriteBatch.Draw(finalResult, new Vector2((graphics.PreferredBackBufferWidth - finalResult.Width) / 2, (graphics.PreferredBackBufferHeight - finalResult.Height) / 2), Color.White);
+            }
+            spriteBatch.Draw(gun, new Vector2((graphics.PreferredBackBufferWidth - gun.Width) / 2, 410),null,Color.White);
+
+            spriteBatch.End();
+
             for (int i = 0; i < _numObject; i++)
             {
                if (_gameObjects[i].IsActive) _gameObjects[i].Draw(spriteBatch);
              }
+           
 
 
-                
             base.Draw(gameTime);
         }
 
