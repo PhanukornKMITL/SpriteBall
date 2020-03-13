@@ -114,7 +114,7 @@ namespace SpriteBall
                     this.Name = "DownBall";
                 }
 
-                OutScreenCheck();
+                OutScreenCheck(this,gameObjects);
 
             }//else
 
@@ -133,6 +133,7 @@ namespace SpriteBall
         {
             spriteBatch.Begin();
             spriteBatch.Draw(_texture , Position ,color );
+            
             spriteBatch.End();
 
             base.Draw(spriteBatch);
@@ -316,10 +317,17 @@ namespace SpriteBall
 
         
 
-        public void OutScreenCheck()
+        public void OutScreenCheck(GameObject ball,List<GameObject> allBall)
         {
-            if(this.Position.Y >= 400 && !this.Name.Equals("DownBall"))
+            if(ball.Position.Y >= 400 && !ball.Name.Equals("DownBall"))
             {
+
+               
+                foreach(GameObject g in allBall)
+                {
+                    if(!g.Name.Equals("Ceiling"))
+                    g.Name = "DownBall";
+                }
                 Singleton.Instance.gameState = Singleton.GameState.LOSE;
             }
         }

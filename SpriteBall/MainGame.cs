@@ -19,8 +19,8 @@ namespace SpriteBall
         private Texture2D ballTexture,bgTexture,woodTexture,winTexture,loseTexture,finalResult,gun;
         string _text = "";
         GameObject ballObj,celingObj;
-        Vector2 _ballPosition;
-        float timePass = 0f;
+        Vector2 _ballPosition,_mousePos,gunPos;
+        float timePass = 0f,rotation;
         Texture2D ceiling;
         int rand;
 
@@ -54,7 +54,7 @@ namespace SpriteBall
             //Texture2D ballTexture = this.Content.Load<Texture2D>("Ball");
             bgTexture = Content.Load<Texture2D>("BG");
             woodTexture = Content.Load<Texture2D>("wood");
-            ballTexture = this.Content.Load<Texture2D>("sprite");
+            ballTexture = this.Content.Load<Texture2D>("ball");
             winTexture = Content.Load<Texture2D>("youwin");
             loseTexture = Content.Load<Texture2D>("youlose");
             gun = Content.Load<Texture2D>("gun");
@@ -62,8 +62,10 @@ namespace SpriteBall
             Singleton.Instance.GameBoard = new int[8,4];
             _gameObjects = new List<GameObject>();
             Color _color = new Color();
-           
-            
+            gunPos = new Vector2((graphics.PreferredBackBufferWidth - gun.Width) / 2, 410);
+
+
+
 
             celingObj = new Celing(woodTexture)
             {
@@ -202,10 +204,20 @@ namespace SpriteBall
             
             switch(Singleton.Instance.gameState)
             {
+
                     case Singleton.GameState.PLAYING:
 
+                    MouseState mouse = Mouse.GetState();
+                    _mousePos = new Vector2(mouse.X, mouse.Y);
+                    Vector2 direction;
+                    direction.X = _mousePos.X - gunPos.X;
+                    direction.Y = _mousePos.Y - gunPos.Y;
+                    direction.Normalize();
+
+                    rotation = (float)Math.Atan2(direction.Y,direction.X) + MathHelper.PiOver2;
                     finalResult = null;
                      timePass += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    
                     
 
               
@@ -250,6 +262,7 @@ namespace SpriteBall
                 case Singleton.GameState.LOSE:
                     _text = "YOU LOSE";
                     finalResult = loseTexture;
+                    _gameObjects.Where(w => w.Name == "DownBall").ToList().ForEach(s => s.Position.Y += 10);
                     break;
 
                 case Singleton.GameState.WIN:
@@ -285,7 +298,10 @@ namespace SpriteBall
             {
                 spriteBatch.Draw(finalResult, new Vector2((graphics.PreferredBackBufferWidth - finalResult.Width) / 2, (graphics.PreferredBackBufferHeight - finalResult.Height) / 2), Color.White);
             }
-            spriteBatch.Draw(gun, new Vector2((graphics.PreferredBackBufferWidth - gun.Width) / 2, 410),null,Color.White);
+            //spriteBatch.Draw(gun, gunPos,null,Color.White);
+            spriteBatch.Draw(gun, new Vector2(gunPos.X +55,gunPos.Y + 110), null, Color.White, rotation  , new Vector2(gun.Width / 2, gun.Height / 2  ),
+                 1f,SpriteEffects.None,0f);
+          
 
             spriteBatch.End();
 
